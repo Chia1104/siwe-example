@@ -2,6 +2,7 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -80,6 +81,13 @@ type LoginRequest struct {
 func Web3Login(w http.ResponseWriter, r *http.Request) error {
 	// Parse the login request body
 	req := new(LoginRequest)
+
+	// 解析 JSON 請求體
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(req)
+	if err != nil {
+		return errors.New("invalid request body")
+	}
 
 	// Verify the signature
 	claims, err := verifyWalletSignature(req.Message, req.Signature)
